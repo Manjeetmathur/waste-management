@@ -54,6 +54,7 @@ export interface PickupRequest {
   estimatedPrice: number;
   actualPrice?: number;
   notes?: string;
+  images?: string[];
   createdAt: Date;
   updatedAt: Date;
 }

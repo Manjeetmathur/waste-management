@@ -49,12 +49,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         // Fetch user data from Firestore
         const userDoc = await getDoc(doc(db, 'users', firebaseUser.uid));
         if (userDoc.exists()) {
-          const userData = userDoc.data() as User;
+          const userData = userDoc.data() as any;
+          // Handle Firestore Timestamp conversion if needed
+          const createdAt = userData.createdAt?.toDate ? userData.createdAt.toDate() : 
+                           (userData.createdAt instanceof Date ? userData.createdAt : new Date());
+          const updatedAt = userData.updatedAt?.toDate ? userData.updatedAt.toDate() : 
+                           (userData.updatedAt instanceof Date ? userData.updatedAt : new Date());
+          
           setUser({
             ...userData,
             id: userData.id || firebaseUser.uid, // Ensure id is always set
-            createdAt: userData.createdAt?.toDate?.() || new Date(),
-            updatedAt: userData.updatedAt?.toDate?.() || new Date(),
+            createdAt: createdAt,
+            updatedAt: updatedAt,
           });
         } else {
           // User document doesn't exist yet, create a basic user object

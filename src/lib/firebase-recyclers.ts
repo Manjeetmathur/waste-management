@@ -121,8 +121,8 @@ export const createRecycler = async (recyclerData: Omit<Recycler, 'id' | 'create
       throw new Error('At least one waste type must be selected');
     }
 
-    // Build pricePerKg object with only selected waste types
-    const cleanPricePerKg: Record<WasteType, number> = {
+    // Build pricePerKg object - start with defaults, then apply user values
+    const defaultPrices: Record<WasteType, number> = {
       plastic: 0,
       paper: 0,
       metal: 0,
@@ -131,6 +131,10 @@ export const createRecycler = async (recyclerData: Omit<Recycler, 'id' | 'create
       organic: 0,
       textile: 0,
       battery: 0,
+    };
+    
+    const cleanPricePerKg: Record<WasteType, number> = {
+      ...defaultPrices,
       ...recyclerData.pricePerKg
     };
 
