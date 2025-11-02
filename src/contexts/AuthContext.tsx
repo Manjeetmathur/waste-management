@@ -49,6 +49,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         // Fetch user data from Firestore
         const userDoc = await getDoc(doc(db, 'users', firebaseUser.uid));
         if (userDoc.exists()) {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           const userData = userDoc.data() as any;
           // Handle Firestore Timestamp conversion if needed
           const createdAt = userData.createdAt?.toDate ? userData.createdAt.toDate() : 
@@ -88,8 +89,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       await signInWithEmailAndPassword(auth, email, password);
       toast.success('Successfully signed in!');
-    } catch (error: any) {
-      toast.error(error.message || 'Failed to sign in');
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Failed to sign in';
+      toast.error(errorMessage);
       throw error;
     }
   };
@@ -121,9 +123,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
       
       toast.success('Successfully signed in with Google!');
-    } catch (error: any) {
+    } catch (error) {
       console.error('Google sign-in error:', error);
-      toast.error(error.message || 'Failed to sign in with Google');
+      const errorMessage = error instanceof Error ? error.message : 'Failed to sign in with Google';
+      toast.error(errorMessage);
       throw error;
     }
   };
@@ -153,8 +156,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       await setDoc(doc(db, 'users', firebaseUser.uid), newUser);
       setUser(newUser);
       toast.success('Account created successfully!');
-    } catch (error: any) {
-      toast.error(error.message || 'Failed to create account');
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Failed to create account';
+      toast.error(errorMessage);
       throw error;
     }
   };
@@ -163,8 +167,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       await signOut(auth);
       toast.success('Successfully signed out!');
-    } catch (error: any) {
-      toast.error(error.message || 'Failed to sign out');
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Failed to sign out';
+      toast.error(errorMessage);
       throw error;
     }
   };
@@ -182,8 +187,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       await setDoc(doc(db, 'users', user.id), updatedUser, { merge: true });
       setUser(updatedUser);
       toast.success('Profile updated successfully!');
-    } catch (error: any) {
-      toast.error(error.message || 'Failed to update profile');
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Failed to update profile';
+      toast.error(errorMessage);
       throw error;
     }
   };

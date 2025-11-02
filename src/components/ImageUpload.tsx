@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useRef } from 'react';
+import Image from 'next/image';
 import { Camera, Upload, X, Loader2 } from 'lucide-react';
 import { uploadImage } from '@/lib/cloudinary';
 import toast from 'react-hot-toast';
@@ -76,19 +77,25 @@ export default function ImageUpload({
         }
         
         imageUrl = data.url;
-      } catch (serverError: any) {
+      } catch (serverError) {
         console.log('Server upload failed, trying client-side upload...', serverError);
         
         // Check if Cloudinary is configured for client-side upload
         const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
         if (!cloudName) {
-          throw new Error('Cloudinary not configured. Please set NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME environment variable.');
+          const errorMessage = serverError instanceof Error 
+            ? serverError.message 
+            : 'Cloudinary not configured. Please set NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME environment variable.';
+          throw new Error(errorMessage);
         }
         
         try {
           imageUrl = await uploadImage(file, folder);
-        } catch (clientError: any) {
-          throw new Error(`Client-side upload failed: ${clientError?.message || 'Unknown error'}`);
+        } catch (clientError) {
+          const errorMessage = clientError instanceof Error
+            ? clientError.message
+            : 'Unknown error';
+          throw new Error(`Client-side upload failed: ${errorMessage}`);
         }
       }
 
@@ -101,9 +108,11 @@ export default function ImageUpload({
       if (fileInputRef.current) {
         fileInputRef.current.value = '';
       }
-    } catch (error: any) {
+    } catch (error) {
       console.error('Upload error:', error);
-      const errorMessage = error?.message || 'Failed to upload image. Please try again.';
+      const errorMessage = error instanceof Error
+        ? error.message
+        : 'Failed to upload image. Please try again.';
       toast.error(errorMessage);
       setPreview(currentImage || null);
     } finally {
@@ -150,10 +159,13 @@ export default function ImageUpload({
 
       {preview && !isUploading ? (
         <div className="relative">
-          <img
+          <Image
             src={preview}
             alt="Preview"
+            width={800}
+            height={192}
             className="w-full h-48 object-cover rounded-lg border-2 border-gray-200"
+            unoptimized
           />
           <button
             type="button"
