@@ -8,7 +8,6 @@ import {
   Recycle, 
   Leaf, 
   Globe, 
-  Users, 
   ArrowRight,
   Sparkles,
   TreePine,
@@ -72,7 +71,7 @@ export default function Hero3D() {
             </h1>
 
             <p className="text-xl lg:text-2xl text-gray-600 mb-4 leading-relaxed">
-              India's Smart Waste Management Platform
+              India&apos;s Smart Waste Management Platform
             </p>
             <p className="text-lg text-gray-500 mb-8 leading-relaxed">
               भारत का स्मार्ट कचरा प्रबंधन प्लेटफॉर्म

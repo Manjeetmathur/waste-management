@@ -13,7 +13,7 @@ interface Card3DProps {
 export default function Card3D({ 
   children, 
   className = '', 
-  intensity = 'medium',
+  intensity: _intensity = 'medium', // Prefix with _ to indicate intentionally unused
   glowEffect = false 
 }: Card3DProps) {
   return (
