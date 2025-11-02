@@ -5,6 +5,8 @@ import {
   User as FirebaseUser,
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
+  signInWithPopup,
+  GoogleAuthProvider,
   signOut,
   onAuthStateChanged,
   updateProfile
@@ -19,6 +21,7 @@ interface AuthContextType {
   firebaseUser: FirebaseUser | null;
   loading: boolean;
   signIn: (email: string, password: string) => Promise<void>;
+  signInWithGoogle: () => Promise<void>;
   signUp: (email: string, password: string, userData: Partial<User>) => Promise<void>;
   logout: () => Promise<void>;
   updateUserProfile: (userData: Partial<User>) => Promise<void>;
@@ -49,8 +52,20 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           const userData = userDoc.data() as User;
           setUser({
             ...userData,
+            id: userData.id || firebaseUser.uid, // Ensure id is always set
             createdAt: userData.createdAt?.toDate?.() || new Date(),
             updatedAt: userData.updatedAt?.toDate?.() || new Date(),
+          });
+        } else {
+          // User document doesn't exist yet, create a basic user object
+          setUser({
+            id: firebaseUser.uid,
+            email: firebaseUser.email || '',
+            name: firebaseUser.displayName || '',
+            userType: 'household',
+            points: 0,
+            createdAt: new Date(),
+            updatedAt: new Date(),
           });
         }
       } else {
@@ -69,6 +84,40 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       toast.success('Successfully signed in!');
     } catch (error: any) {
       toast.error(error.message || 'Failed to sign in');
+      throw error;
+    }
+  };
+
+  const signInWithGoogle = async () => {
+    try {
+      const provider = new GoogleAuthProvider();
+      const result = await signInWithPopup(auth, provider);
+      const firebaseUser = result.user;
+      
+      // Check if user document exists in Firestore
+      const userDoc = await getDoc(doc(db, 'users', firebaseUser.uid));
+      
+      if (!userDoc.exists()) {
+        // Create user document in Firestore for new Google sign-in users
+        const newUser: User = {
+          id: firebaseUser.uid,
+          email: firebaseUser.email || '',
+          name: firebaseUser.displayName || firebaseUser.email?.split('@')[0] || 'User',
+          phone: firebaseUser.phoneNumber || '',
+          userType: 'household',
+          points: 0,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        };
+        
+        await setDoc(doc(db, 'users', firebaseUser.uid), newUser);
+        setUser(newUser);
+      }
+      
+      toast.success('Successfully signed in with Google!');
+    } catch (error: any) {
+      console.error('Google sign-in error:', error);
+      toast.error(error.message || 'Failed to sign in with Google');
       throw error;
     }
   };
@@ -138,6 +187,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     firebaseUser,
     loading,
     signIn,
+    signInWithGoogle,
     signUp,
     logout,
     updateUserProfile,
