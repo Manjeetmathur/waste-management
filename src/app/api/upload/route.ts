@@ -68,26 +68,31 @@ export async function POST(request: NextRequest) {
       ).end(buffer);
     });
 
-    if (!result || !(result as any).secure_url) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const uploadResult = result as any;
+    if (!uploadResult || !uploadResult.secure_url) {
       throw new Error('Upload succeeded but no URL returned');
     }
 
     return NextResponse.json({
-      url: (result as any).secure_url,
-      publicId: (result as any).public_id
+      url: uploadResult.secure_url,
+      publicId: uploadResult.public_id
     });
 
-  } catch (error: any) {
+  } catch (error) {
     console.error('Upload error:', error);
     
     // Provide more specific error messages
     let errorMessage = 'Upload failed. Please try again.';
-    if (error?.message) {
+    if (error instanceof Error) {
       errorMessage = error.message;
-    } else if (error?.http_code) {
-      errorMessage = `Cloudinary error: ${error.message || 'Upload failed'}`;
+    } else if (error && typeof error === 'object' && 'message' in error) {
+      errorMessage = String(error.message);
+    } else if (error && typeof error === 'object' && 'http_code' in error) {
+      const errorObj = error as { http_code?: number; message?: string };
+      errorMessage = `Cloudinary error: ${errorObj.message || 'Upload failed'}`;
     }
-    
+
     return NextResponse.json(
       { error: errorMessage },
       { status: 500 }

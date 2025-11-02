@@ -5,7 +5,6 @@ import {
   getDoc, 
   doc, 
   updateDoc, 
-  deleteDoc, 
   query, 
   where, 
   orderBy,
@@ -37,6 +36,7 @@ export const createPickupRequest = async (pickupData: Omit<PickupRequest, 'id' |
     }
 
     // Filter out undefined values to avoid Firestore errors
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const cleanData: Record<string, any> = {
       userId: pickupData.userId,
       recyclerId: pickupData.recyclerId || '',

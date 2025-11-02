@@ -50,8 +50,9 @@ const SignInPage = () => {
     try {
       await signIn(email, password);
       router.push('/');
-    } catch (error: any) {
+    } catch (error) {
       console.error('Sign in error:', error);
+      toast.error(error instanceof Error ? error.message : 'Failed to sign in. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -62,8 +63,9 @@ const SignInPage = () => {
     try {
       await signInWithGoogle();
       router.push('/');
-    } catch (error: any) {
+    } catch (error) {
       console.error('Google sign in error:', error);
+      toast.error(error instanceof Error ? error.message : 'Failed to sign in with Google. Please try again.');
     } finally {
       setLoading(false);
     }

@@ -181,9 +181,10 @@ const RegisterRecyclerPage = () => {
       }
 
       router.push('/recyclers');
-    } catch (error: any) {
+    } catch (error) {
       console.error('Registration error:', error);
-      toast.error(error.message || 'Failed to register as recycler. Please try again.');
+      const errorMessage = error instanceof Error ? error.message : 'Failed to register as recycler. Please try again.';
+      toast.error(errorMessage);
     } finally {
       setLoading(false);
     }

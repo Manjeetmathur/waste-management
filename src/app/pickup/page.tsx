@@ -145,9 +145,10 @@ const PickupPage = () => {
         notes: '',
         images: []
       });
-    } catch (error: any) {
+    } catch (error) {
       console.error('Pickup scheduling error:', error);
-      toast.error(error.message || 'Failed to schedule pickup. Please try again.');
+      const errorMessage = error instanceof Error ? error.message : 'Failed to schedule pickup. Please try again.';
+      toast.error(errorMessage);
     } finally {
       setLoading(false);
     }

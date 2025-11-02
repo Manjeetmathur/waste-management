@@ -81,8 +81,9 @@ const SignUpPage = () => {
         userType: formData.userType
       });
       router.push('/');
-    } catch (error: any) {
+    } catch (error) {
       console.error('Sign up error:', error);
+      toast.error(error instanceof Error ? error.message : 'Failed to sign up. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -93,8 +94,9 @@ const SignUpPage = () => {
     try {
       await signInWithGoogle();
       router.push('/');
-    } catch (error: any) {
+    } catch (error) {
       console.error('Google sign up error:', error);
+      toast.error(error instanceof Error ? error.message : 'Failed to sign up with Google. Please try again.');
     } finally {
       setLoading(false);
     }

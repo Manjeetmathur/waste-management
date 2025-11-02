@@ -1,4 +1,4 @@
-import { Recycler, QuizQuestion, Challenge, Tip, WasteType } from '@/types';
+import { Recycler, QuizQuestion, Challenge, Tip } from '@/types';
 
 export const demoRecyclers: Recycler[] = [
   {
